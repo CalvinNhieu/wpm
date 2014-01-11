@@ -9,5 +9,7 @@
     <string name="log_button">Log</string>
     <string name="about_button">About</string>
     <string name="title_activity_test_screen">TestScreen</string>
+    <string name="text_body"></string>
+    <string name="test">test</string>
 
 </resources>
