@@ -26,6 +26,14 @@
             android:name="com.example.wpm.TestScreen"
             android:label="@string/title_activity_test_screen" >
         </activity>
+        <activity
+            android:name="com.example.wpm.StatsActivity"
+            android:label="@string/title_activity_stats"
+            android:parentActivityName="com.example.wpm.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.wpm.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
