@@ -1,5 +1,11 @@
 package com.example.wpm;
 
+import java.io.IOException;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
