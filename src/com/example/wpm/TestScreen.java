@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.widget.EditText;
@@ -20,6 +21,7 @@ public class TestScreen extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test_screen);
 		editText = (EditText) findViewById(R.id.user_input_word);
+		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		textView = (TextView) findViewById(R.id.user_input_passage);
 		editText.addTextChangedListener(new TextWatcher() {
 			  public void afterTextChanged(Editable s){
