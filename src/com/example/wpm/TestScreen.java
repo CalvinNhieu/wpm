@@ -1,7 +1,11 @@
 package com.example.wpm;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import android.app.Activity;
 import android.inputmethodservice.KeyboardView;
@@ -23,6 +27,7 @@ public class TestScreen extends Activity {
 	int finished;
 	int correct;
 	int wrong;
+	String passage;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +36,15 @@ public class TestScreen extends Activity {
 		editText = (EditText) findViewById(R.id.user_input_word);
 		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		textView = (TextView) findViewById(R.id.user_input_passage);
-		tester = new Scanner(getString(R.string.system_passage));
+		
+		try {
+			passage = generatePassage();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		tester = new Scanner(passage);
 		tester.useDelimiter(" ");
 		passageEntries = new ArrayList <String>();
 		correct = 0;
@@ -71,5 +84,12 @@ public class TestScreen extends Activity {
 		return true;
 	}
 	
+	public static String generatePassage() throws IOException{
+		Document doc = Jsoup.connect("http://en.wikipedia.org/wiki/Special:Random").get();
+		String data = doc.select("p").first().text();
+		data = data.replaceAll("\\(.*\\)", "");
+		data = data.replaceAll("\\[.*\\]", "");
+		return data;
+	}
 
 }
