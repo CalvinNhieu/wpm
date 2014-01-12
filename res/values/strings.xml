@@ -10,7 +10,8 @@
     <string name="about_button">About</string>
     <string name="title_activity_test_screen">TestScreen</string>
     <string name="user_input_passage"></string>
-    <string name="begin_hint">Begin</string>
+    <string name="begin_hint">Type!</string>
     <string name="test">test</string>
+    <string name="system_passage">"Hello Wonderful World And All of It's Inhabitants!"</string>
 
 </resources>

@@ -1,5 +1,8 @@
 package com.example.wpm;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import android.app.Activity;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
@@ -15,6 +18,11 @@ public class TestScreen extends Activity {
 	EditText editText;
 	TextView textView;
 	KeyboardView keyView;
+	Scanner tester;
+	ArrayList<String> passageEntries;
+	int finished;
+	int correct;
+	int wrong;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,14 +31,32 @@ public class TestScreen extends Activity {
 		editText = (EditText) findViewById(R.id.user_input_word);
 		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		textView = (TextView) findViewById(R.id.user_input_passage);
+		tester = new Scanner(getString(R.string.system_passage));
+		tester.useDelimiter(" ");
+		passageEntries = new ArrayList <String>();
+		correct = 0;
+		wrong = 0;
+		
+		while(tester.hasNext()) {
+			passageEntries.add(tester.next());
+		}
+		
 		editText.addTextChangedListener(new TextWatcher() {
 			  public void afterTextChanged(Editable s){
 				  if (s.length() < 1) {
 					  return;
 				  }
 				  if (s.charAt(s.length()-1) == ' ') {
+					  System.out.println(editText.getText().toString().substring(0,editText.getText().toString().length()-1));
+					  if ((editText.getText().toString().substring(0,editText.getText().toString().length()-1)).equals(passageEntries.get(correct))) {
+						  correct++;
+						  textView.setText(textView.getText().toString() + s);
+					  }
+					  else {
+						  wrong++;
+					  }
 					  editText.setText("");
-					  textView.setText(textView.getText().toString() + s);
+					  System.out.println("F:"+finished+" C:"+correct+" W:"+wrong);
 				  }
 			  }
 		      public void beforeTextChanged(CharSequence s, int start, int count,int after){}
