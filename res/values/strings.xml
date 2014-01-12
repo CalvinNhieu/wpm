@@ -9,7 +9,8 @@
     <string name="log_button">Log</string>
     <string name="about_button">About</string>
     <string name="title_activity_test_screen">TestScreen</string>
-    <string name="text_body"></string>
+    <string name="user_input_passage"></string>
+    <string name="begin_hint">Begin</string>
     <string name="test">test</string>
 
 </resources>

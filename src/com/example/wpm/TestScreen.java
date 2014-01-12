@@ -19,15 +19,21 @@ public class TestScreen extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test_screen);
-		editText = (EditText) findViewById(R.id.input_text);
+		editText = (EditText) findViewById(R.id.user_input_word);
+		textView = (TextView) findViewById(R.id.user_input_passage);
 		editText.addTextChangedListener(new TextWatcher() {
 			  public void afterTextChanged(Editable s){
-				  textView.setText(s);
+				  if (s.length() < 1) {
+					  return;
+				  }
+				  if (s.charAt(s.length()-1) == ' ') {
+					  editText.setText("");
+					  textView.setText(textView.getText().toString() + s);
+				  }
 			  }
 		      public void beforeTextChanged(CharSequence s, int start, int count,int after){}
 		      public void onTextChanged(CharSequence s, int start, int before,int count){}
 		});
-		textView = (TextView) findViewById(R.id.text_body);
 	}
 	
 	@Override
@@ -37,14 +43,5 @@ public class TestScreen extends Activity {
 		return true;
 	}
 	
-	
-	/*public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        
-        String string = editText.getText().toString();
-        textView.setText(string); 
-        
-        return true;
-    }*/
 
 }
