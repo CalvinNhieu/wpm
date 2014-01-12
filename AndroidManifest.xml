@@ -26,6 +26,10 @@
             android:name="com.example.wpm.TestScreen"
             android:label="@string/title_activity_test_screen" >
         </activity>
+        <activity
+            android:name="com.example.wpm.AboutScreen"
+            android:label="@string/title_activity_about_screen" >
+        </activity>
     </application>
 
 </manifest>

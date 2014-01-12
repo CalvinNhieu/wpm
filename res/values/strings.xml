@@ -13,5 +13,10 @@
     <string name="begin_hint">Type!</string>
     <string name="test">test</string>
     <string name="system_passage">"Hello Wonderful World And All of It's Inhabitants!"</string>
+    <string name="title_activity_about_page">AboutPage</string>
+    <string name="title_activity_about_screen">AboutScreen</string>
+    <string name="about">WPM by Matthew Du and Calvin Nhieu</string>
+    <string name="date">SE Hack Day. Saturday, January 11th, 2014.</string>
+    
 
 </resources>
