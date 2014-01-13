@@ -40,7 +40,6 @@ public class TestScreen extends Activity {
 		textView = (TextView) findViewById(R.id.user_input_passage);
 				
 		final TextView myTextView = (TextView) findViewById(R.id.system_passage);
-		//String passage = "";
 		new AsyncTask<Void, Void, String>() {
 	          @Override
 	          protected String doInBackground(Void... unused) {
