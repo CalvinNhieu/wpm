@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="13"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -26,7 +26,8 @@
         </activity>
         <activity
             android:name="com.example.wpm.TestScreen"
-            android:label="@string/title_activity_test_screen" >
+            android:label="@string/title_activity_test_screen"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar">
         </activity>
         <activity
             android:name="com.example.wpm.AboutScreen"
