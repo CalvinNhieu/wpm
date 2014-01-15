@@ -9,7 +9,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.app.Activity;
-import android.inputmethodservice.KeyboardView;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,25 +23,41 @@ import android.widget.TextView;
 
 public class TestScreen extends Activity {
 	
-	EditText editText;
-	TextView textView;
-	KeyboardView keyView;
-	Scanner tester;
-	ArrayList<String> passageEntries;
-	int correct;
-	int wrong;
-	String passage;
+	EditText inputField; // user-single word input text field
+	TextView completedWords; // displays words that user has completed
+	Scanner tester; // manipulates scraped article
+	ArrayList<String> passageEntries; // holds article in individual strings
 	
+	AlertDialog.Builder builder1; // popup builder
+	AlertDialog alert1; // notification window
+	
+	int correct; // counts # of correct words typed
+	int wrong; // counts # of wrong words typed
+	String passage; // contains article scraped from web
+	long startTime; // time test is started
+	long timeElapsed; // time test took to complete
+	double wpm; // user's wpm result
+	boolean finished; // whether or not test is complete
+	
+	// creates activity
+	// switches to activity
+	// instantiates textview and inputview
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test_screen);
 
-		editText = (EditText) findViewById(R.id.user_input_word);
-		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		textView = (TextView) findViewById(R.id.user_input_passage);
-				
-		final TextView myTextView = (TextView) findViewById(R.id.system_passage);
+		inputField = (EditText) findViewById(R.id.user_input_word);
+		inputField.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		completedWords = (TextView) findViewById(R.id.user_input_passage);
+		
+		// create global textview to display article scraped from web
+		// AsyncTask attempts to connect to the web and pull a random
+		// Wikipedia page in the form of a document.
+		// A string is parsed from the document as the test passage
+		// variable data is sent to onPostExecute to display text and
+		// continues to execute the program "handleAsyncTaskEnd" 
+		final TextView passageDisplay = (TextView) findViewById(R.id.system_passage);
 		new AsyncTask<Void, Void, String>() {
 	          @Override
 	          protected String doInBackground(Void... unused) {
@@ -60,43 +78,65 @@ public class TestScreen extends Activity {
 
 	          @Override
 	          protected void onPostExecute(String title) {        
-	        	  myTextView.setText(title);
-	        	  handleAsyncTaskEnd(myTextView);
+	        	  passageDisplay.setText(title);
+	        	  handleAsyncTaskEnd(passageDisplay);
 	          }  
 		}.execute();
 	}
 	
-	private void handleAsyncTaskEnd(TextView myTextView) {
+	// ...the rest of the program...
+	// scanner individualizes the entire string pulled from web
+	// into single strings stored in an Arraylist, "passageEntries"
+	// other variables are instantiated
+	private void handleAsyncTaskEnd(TextView passageDisplay) {
 		
-		tester = new Scanner(myTextView.getText().toString());
+		tester = new Scanner(passageDisplay.getText().toString());
 		tester.useDelimiter(" ");
 		passageEntries = new ArrayList <String>();
 		correct = 0;
 		wrong = 0;
-		int counter=0;
-		System.out.println(myTextView.getText().toString());
+		startTime = 0;
+		timeElapsed = 0;
+		finished = false;
+		
 		while(tester.hasNext()) {
 			passageEntries.add(tester.next());
-			counter++;
 		}
-		System.out.println(counter);
-		editText.addTextChangedListener(new TextWatcher() {
+		
+		// logic for dynamically checking user input
+		// addTextChangedListener implements 3 abstract methods...
+		// using only "afterTextChanged" to listen for:
+		
+		// INITIAL INPUT
+		// start timer
+		
+		// SPACEBAR INPUT
+		// Clear input field, perform string comparison, check
+		// for passage completion
+		
+		inputField.addTextChangedListener(new TextWatcher() {
 			  public void afterTextChanged(Editable s){
 				  if (s.length() < 1) {
 					  return;
 				  }
+				  if(startTime==0 && correct == 0 && wrong == 0) {
+					  startTime = System.currentTimeMillis();
+				  }
 				  
-				  if (s.charAt(s.length()-1) == ' ') {
-					  System.out.println(editText.getText().toString().substring(0,editText.getText().toString().length()-1));
-					  if ((editText.getText().toString().substring(0,editText.getText().toString().length()-1)).equals(passageEntries.get(correct))) {
+				  if (s.charAt(s.length()-1) == ' ' && !finished) {
+					  if ((inputField.getText().toString().substring(0,inputField.getText().toString().length()-1)).equals(passageEntries.get(correct))) {
+						  completedWords.setText(completedWords.getText().toString() + s);
+						  if (correct == passageEntries.size()-1) {
+							  timeElapsed = System.currentTimeMillis() - startTime;
+							  endTest(timeElapsed, correct);
+							  return;
+						  }
 						  correct++;
-						  textView.setText(textView.getText().toString() + s);
 					  }
 					  else {
 						  wrong++;
 					  }
-					  editText.setText("");
-					  System.out.println("C:"+correct+" W:"+wrong);
+					  inputField.setText("");
 				  }
 			  }
 		      public void beforeTextChanged(CharSequence s, int start, int count,int after){}
@@ -104,10 +144,61 @@ public class TestScreen extends Activity {
 		});
 	}
 	
+	// when test has been completed
+	// appropriately parse time variable to double
+	// calculate words per minute
+	// display one of two dialogs:
+	
+	// COMPLETED
+	// Displays words per minute result
+	// Prompts to add test to log
+	
+	// FAILED
+	// User did not complete test within 10minutes (600 000 ms)
+	// User must retry test ...
+	public void endTest (long time, int numOfWords) {
+		finished = true;
+		if (time < 600000) {
+			double t = (double) time;
+			t /= 60000;
+			wpm = (double) (t*numOfWords);
+		
+			builder1 = new AlertDialog.Builder(this);
+			builder1.setMessage("Your WPM is: " + wpm);
+			builder1.setCancelable(true);
+			builder1.setPositiveButton("Send to Log",
+					new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					toMain();
+				}
+			});
+		}
+		else {
+			builder1 = new AlertDialog.Builder(this);
+			builder1.setMessage("You have exceeded the maximum time limit to complete the test. Please try again.");
+			builder1.setCancelable(true);
+			builder1.setPositiveButton("Return",
+					new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					toMain();
+				}
+			});
+		}
+		alert1 = builder1.create();
+        alert1.show();
+	}
+	
+	// return to main menu method
+	public void toMain () {
+		Intent toMain = new Intent(this, MainActivity.class);
+		startActivity(toMain);
+	}
+	
+	// abstract implementation
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.test_screen, menu);
 		return true;
 	}
 
