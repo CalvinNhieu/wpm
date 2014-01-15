@@ -209,7 +209,7 @@ public class TestScreen extends Activity {
 	public void sendToLog(double wpm, double timeInSeconds, int totalWords, int mistakes) throws IOException {
 		SharedPreferences logFile = this.getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = logFile.edit().putString("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes, null);
-		
+		// yet to be tested... and finished.
 	}
 	
 	public boolean fileExistance(String fname){
