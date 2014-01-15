@@ -1,8 +1,6 @@
 package com.example.wpm;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -38,7 +37,6 @@ public class TestScreen extends Activity {
 	int correct; // counts # of correct words typed
 	int mistakes; // counts # of wrong words typed
 	String passage; // contains article scraped from web
-	String logFileName; // name of log file
 	long startTime; // time test is started
 	long timeElapsed; // time test took to complete
 	double t; // double type of timeElapsed
@@ -99,7 +97,6 @@ public class TestScreen extends Activity {
 		tester = new Scanner(passageDisplay.getText().toString());
 		tester.useDelimiter(" ");
 		passageEntries = new ArrayList <String>();
-		logFileName = "log.txt";
 		correct = 0;
 		mistakes = 0;
 		startTime = 0;
@@ -168,7 +165,7 @@ public class TestScreen extends Activity {
 		if (time < 600000) {
 			t= (double) time;
 			t /= 60000;
-			wpm = (double) (t*numOfWords);
+			wpm = (double) (numOfWords/t);
 		
 			builder1 = new AlertDialog.Builder(this);
 			builder1.setMessage("Results: " + wpm + " wrds/min");
@@ -209,18 +206,10 @@ public class TestScreen extends Activity {
         alert1.show();
 	}
 	
-	// OK SO THIS DOES NOT WORK . I don't know what to do to log this business lol
 	public void sendToLog(double wpm, double timeInSeconds, int totalWords, int mistakes) throws IOException {
-		// write the file if it doesn't already exist
-		//if (!fileExistance(logFileName)) { I DONT KNOW IF WE NEED THIS LOL
-			String logInfo = wpm + "|" + timeInSeconds + "|" + totalWords + "|" + mistakes + "/";
-			FileOutputStream writer = openFileOutput (logFileName, Context.MODE_PRIVATE);
-			writer.write(logInfo.getBytes());
-			writer.close();
-			
-			FileInputStream reader = openFileInput(logFileName);
-			System.out.println(reader.read());
-		//}
+		SharedPreferences logFile = this.getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = logFile.edit().putString("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes, null);
+		
 	}
 	
 	public boolean fileExistance(String fname){
@@ -233,6 +222,7 @@ public class TestScreen extends Activity {
 	// return to main menu method
 	public void toMain () {
 		Intent toMain = new Intent(this, MainActivity.class);
+		onDestroy();
 		startActivity(toMain);
 	}
 	
