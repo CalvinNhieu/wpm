@@ -1,6 +1,5 @@
 package com.example.wpm;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -43,6 +42,8 @@ public class TestScreen extends Activity {
 	double t; // double type of timeElapsed
 	double wpm; // user's wpm result
 	boolean finished; // whether or not test is complete
+	
+	SharedPreferences logFile;
 	
 	// creates activity
 	// switches to activity
@@ -103,6 +104,8 @@ public class TestScreen extends Activity {
 		startTime = 0;
 		timeElapsed = 0;
 		finished = false;
+		
+		logFile = this.getPreferences(Context.MODE_PRIVATE);
 		
 		while(tester.hasNext()) {
 			passageEntries.add(tester.next());
@@ -208,18 +211,13 @@ public class TestScreen extends Activity {
         alert1.show();
 	}
 	
+	// YET TO BE TESTED
 	public void sendToLog(double wpm, double timeInSeconds, int totalWords, int mistakes) throws IOException {
 		SharedPreferences logFile = this.getPreferences(Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = logFile.edit().putString("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes, null);
-		// yet to be tested... and finished.
+		SharedPreferences.Editor editor = logFile.edit();
+		editor.putString("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes, null);
+		editor.commit();
 	}
-	
-	public boolean fileExistance(String fname){
-	    File file = getBaseContext().getFileStreamPath(fname);
-	    return file.exists();
-	}
-	
-	
 	
 	// return to main menu method
 	public void toMain () {

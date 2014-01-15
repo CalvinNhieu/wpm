@@ -35,4 +35,11 @@ public class MainActivity extends Activity {
     	startActivity(toAboutScreen);
     	finish();
     }
+    
+    // to change to log screen
+    public void startLog (View view) {
+    	Intent toLogScreen = new Intent(this,LogScreen.class);
+    	startActivity(toLogScreen);
+    	finish();
+    }
 }
