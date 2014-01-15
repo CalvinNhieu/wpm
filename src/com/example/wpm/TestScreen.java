@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -166,9 +167,10 @@ public class TestScreen extends Activity {
 			t= (double) time;
 			t /= 60000;
 			wpm = (double) (numOfWords/t);
+			wpm = Math.round(wpm);
 		
 			builder1 = new AlertDialog.Builder(this);
-			builder1.setMessage("Results: " + wpm + " wrds/min");
+			builder1.setMessage("Results: " + wpm + " words/min");
 			builder1.setCancelable(true);
 			builder1.setPositiveButton("Send to Log",
 					new DialogInterface.OnClickListener() {
@@ -222,8 +224,19 @@ public class TestScreen extends Activity {
 	// return to main menu method
 	public void toMain () {
 		Intent toMain = new Intent(this, MainActivity.class);
-		onDestroy();
 		startActivity(toMain);
+		finish();
+	}
+	
+	// Edit back button behaviour
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+	    if (keyCode == KeyEvent.KEYCODE_BACK ) {
+	    	toMain();
+			finish();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
 	
 	// abstract implementation

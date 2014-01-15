@@ -2,6 +2,8 @@ package com.example.wpm;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
 
 public class AboutScreen extends Activity {
@@ -11,11 +13,27 @@ public class AboutScreen extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about_screen);
 	}
+	
+	// Edit back button behaviour
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+	    if (keyCode == KeyEvent.KEYCODE_BACK ) {
+	    	toMain();
+			finish();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+		
+	// return to main menu method
+	public void toMain () {
+		Intent toMain = new Intent(this, MainActivity.class);
+		startActivity(toMain);
+		finish();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.about_screen, menu);
 		return true;
 	}
 

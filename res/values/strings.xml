@@ -8,12 +8,11 @@
     <string name="test_button">Test</string>
     <string name="log_button">Log</string>
     <string name="about_button">About</string>
-    <string name="title_activity_test_screen">TestScreen</string>
+    <string name="title_activity_test_screen">Test</string>
     <string name="user_input_passage"></string>
     <string name="begin_hint">Type!</string>
     <string name="test">test</string>
-    <string name="title_activity_about_page">AboutPage</string>
-    <string name="title_activity_about_screen">AboutScreen</string>
+    <string name="title_activity_about_screen">About</string>
     <string name="about">WPM by Matthew Du and Calvin Nhieu</string>
     <string name="date">SE Hack Day. Saturday, January 11th, 2014.</string>
     

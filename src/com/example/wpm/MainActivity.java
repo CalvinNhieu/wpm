@@ -26,11 +26,13 @@ public class MainActivity extends Activity {
     public void startTest(View view) {
         Intent toTestScreen = new Intent(this, TestScreen.class);
         startActivity(toTestScreen);
+        finish();
     }
     
     // to change to about screen
     public void startAbout (View view) {
     	Intent toAboutScreen = new Intent(this,AboutScreen.class);
     	startActivity(toAboutScreen);
+    	finish();
     }
 }
