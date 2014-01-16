@@ -2,7 +2,9 @@ package com.example.wpm;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -25,25 +27,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class TestScreen extends Activity {
+		
+	private EditText inputField; // user-single word input text field
+	private TextView completedWords; // displays words that user has completed
+	private Scanner tester; // manipulates scraped article
+	private ArrayList<String> passageEntries; // holds article in individual strings
 	
-	EditText inputField; // user-single word input text field
-	TextView completedWords; // displays words that user has completed
-	Scanner tester; // manipulates scraped article
-	ArrayList<String> passageEntries; // holds article in individual strings
+	private AlertDialog.Builder builder1; // popup builder
+	private AlertDialog alert1; // notification window
 	
-	AlertDialog.Builder builder1; // popup builder
-	AlertDialog alert1; // notification window
+	private int correct; // counts # of correct words typed
+	private int mistakes; // counts # of wrong words typed
+	private long startTime; // time test is started
+	private long timeElapsed; // time test took to complete
+	private double t; // double type of timeElapsed
+	private double wpm; // user's wpm result
+	private boolean finished; // whether or not test is complete
 	
-	int correct; // counts # of correct words typed
-	int mistakes; // counts # of wrong words typed
-	String passage; // contains article scraped from web
-	long startTime; // time test is started
-	long timeElapsed; // time test took to complete
-	double t; // double type of timeElapsed
-	double wpm; // user's wpm result
-	boolean finished; // whether or not test is complete
-	
-	SharedPreferences logFile;
+	private Set<String> logs; // set of strings to store in sharedpreferences
+	private String logsDataKey; // key value to access log data within internal app storage
 	
 	// creates activity
 	// switches to activity
@@ -105,7 +107,8 @@ public class TestScreen extends Activity {
 		timeElapsed = 0;
 		finished = false;
 		
-		logFile = this.getPreferences(Context.MODE_PRIVATE);
+		logsDataKey = "log_data_key";
+		logs = new HashSet<String>();
 		
 		while(tester.hasNext()) {
 			passageEntries.add(tester.next());
@@ -131,7 +134,7 @@ public class TestScreen extends Activity {
 					  startTime = System.currentTimeMillis();
 				  }
 				  
-				  if (s.charAt(s.length()-1) == ' ' && !finished) {
+				  if (s.charAt(s.length()-1) == ' ' && !finished && passageEntries.get(correct) != null) {
 					  if ((inputField.getText().toString().substring(0,inputField.getText().toString().length()-1)).equals(passageEntries.get(correct))) {
 						  completedWords.setText(completedWords.getText().toString() + s);
 						  if (correct == passageEntries.size()-1) {
@@ -171,7 +174,8 @@ public class TestScreen extends Activity {
 			t /= 60000;
 			wpm = (double) (numOfWords/t);
 			wpm = Math.round(wpm);
-		
+			
+			//dialog 1
 			builder1 = new AlertDialog.Builder(this);
 			builder1.setMessage("Results: " + wpm + " words/min");
 			builder1.setCancelable(true);
@@ -180,7 +184,7 @@ public class TestScreen extends Activity {
 				public void onClick(DialogInterface dialog, int id) {
 					dialog.cancel();
 					try {
-						sendToLog(wpm,t*60,correct,mistakes);
+						sendToLog(wpm,Math.round(t*60),correct,mistakes);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -195,6 +199,7 @@ public class TestScreen extends Activity {
 				}
 			});
 		}
+		//dialog 2
 		else {
 			builder1 = new AlertDialog.Builder(this);
 			builder1.setMessage("You have exceeded the maximum time limit to complete the test. Please try again.");
@@ -207,20 +212,24 @@ public class TestScreen extends Activity {
 				}
 			});
 		}
+		//create dialog with appropriate settings
 		alert1 = builder1.create();
         alert1.show();
 	}
 	
-	// YET TO BE TESTED
 	public void sendToLog(double wpm, double timeInSeconds, int totalWords, int mistakes) throws IOException {
-		SharedPreferences logFile = this.getPreferences(Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = logFile.edit();
-		editor.putString("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes, null);
+		
+		if (MainActivity.getLogFile().getStringSet(logsDataKey,null) != null) {
+			logs.addAll(MainActivity.getLogFile().getStringSet(logsDataKey, null));
+		}
+		logs.add("WPM: "  + wpm + " Time: " + timeInSeconds + " Typed: " + totalWords + " Mistakes: " +  mistakes + " ||| ");
+		SharedPreferences.Editor editor = MainActivity.getLogFile().edit();
+		editor.putStringSet(logsDataKey, logs);
 		editor.commit();
 	}
 	
 	// return to main menu method
-	public void toMain () {
+	public void toMain() {
 		Intent toMain = new Intent(this, MainActivity.class);
 		startActivity(toMain);
 		finish();
@@ -237,10 +246,137 @@ public class TestScreen extends Activity {
 	    return super.onKeyDown(keyCode, event);
 	}
 	
+	public Context getTestScreen () {
+		return this;
+	}
+	
 	// abstract implementation
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return true;
 	}
+	
+	// GETTERS AND SETTERS
+	public EditText getInputField() {
+		return inputField;
+	}
+
+	public void setInputField(EditText inputField) {
+		this.inputField = inputField;
+	}
+
+	public TextView getCompletedWords() {
+		return completedWords;
+	}
+
+	public void setCompletedWords(TextView completedWords) {
+		this.completedWords = completedWords;
+	}
+
+	public Scanner getTester() {
+		return tester;
+	}
+
+	public void setTester(Scanner tester) {
+		this.tester = tester;
+	}
+
+	public ArrayList<String> getPassageEntries() {
+		return passageEntries;
+	}
+
+	public void setPassageEntries(ArrayList<String> passageEntries) {
+		this.passageEntries = passageEntries;
+	}
+
+	public AlertDialog.Builder getBuilder1() {
+		return builder1;
+	}
+
+	public void setBuilder1(AlertDialog.Builder builder1) {
+		this.builder1 = builder1;
+	}
+
+	public AlertDialog getAlert1() {
+		return alert1;
+	}
+
+	public void setAlert1(AlertDialog alert1) {
+		this.alert1 = alert1;
+	}
+
+	public int getCorrect() {
+		return correct;
+	}
+
+	public void setCorrect(int correct) {
+		this.correct = correct;
+	}
+
+	public int getMistakes() {
+		return mistakes;
+	}
+
+	public void setMistakes(int mistakes) {
+		this.mistakes = mistakes;
+	}
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	public long getTimeElapsed() {
+		return timeElapsed;
+	}
+
+	public void setTimeElapsed(long timeElapsed) {
+		this.timeElapsed = timeElapsed;
+	}
+
+	public double getT() {
+		return t;
+	}
+
+	public void setT(double t) {
+		this.t = t;
+	}
+
+	public double getWpm() {
+		return wpm;
+	}
+
+	public void setWpm(double wpm) {
+		this.wpm = wpm;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+
+	public Set<String> getLogs() {
+		return logs;
+	}
+
+	public void setLogs(Set<String> logs) {
+		this.logs = logs;
+	}
+
+	public String getLogsDataKey() {
+		return logsDataKey;
+	}
+
+	public void setLogsDataKey(String logsDataKey) {
+		this.logsDataKey = logsDataKey;
+	}
+	
+	
 
 }
