@@ -17,7 +17,12 @@ public class LogScreen extends Activity {
 		setContentView(R.layout.activity_log_screen);
 		
 		logDisplay = (TextView) findViewById(R.id.logDisplay); // init textview
-		logDisplay.setText(MainActivity.getLogFile().getStringSet(MainActivity.getLogdatakey(), null).toString()); // display text
+		if  (MainActivity.getLogFile().getStringSet(MainActivity.getLogdatakey(),null) != null) {
+			logDisplay.setText(MainActivity.getLogFile().getStringSet(MainActivity.getLogdatakey(), null).toString()); // display text
+		}
+		else {
+			logDisplay.setText("There are no test results to display.");
+		}
 	}
 
 // return to main menu method
